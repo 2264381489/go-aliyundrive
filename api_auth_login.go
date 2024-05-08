@@ -58,6 +58,9 @@ func (r *AuthService) LoginByQrcode(ctx context.Context, request *LoginByQrcodeR
 				if err != nil {
 					r.cli.log(ctx, LogLevelError, "get user twice failed when token expired: %s", err)
 				}
+				if r.cli.AppConfig != nil {
+					r.cli.AppConfig.UserId = userInfo.UserID
+				}
 			}
 		}
 	}

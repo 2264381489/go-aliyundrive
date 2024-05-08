@@ -20,6 +20,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/chyroc/gorequests"
+	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"mime"
@@ -28,9 +30,6 @@ import (
 	"net/url"
 	"reflect"
 	"strings"
-
-	"github.com/chyroc/gorequests"
-	"github.com/sirupsen/logrus"
 
 	"github.com/chyroc/go-aliyundrive/internal/helper_tool"
 )
@@ -171,6 +170,12 @@ func (r *AliyunDrive) prepareHeaders(ctx context.Context, req *RawRequestReq) (m
 		headers["Authorization"] = "Bearer " + token.AccessToken
 	}
 
+	if err := r.calcSignature(); err != nil {
+		return nil, err
+	}
+
+	headers["x-device-id"] = r.AppConfig.DeviceId
+	headers["x-signature"] = r.AppConfig.SignatureData
 	return headers, nil
 }
 
